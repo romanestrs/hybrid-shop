@@ -1,6 +1,6 @@
-# 🛒 Hybrid Shop – Full-stack app with a hybrid database architecture
+# Officine – online pharmacy (hybrid PostgreSQL + MongoDB)
 
-A self-contained online shop combining a **relational database (PostgreSQL)** for critical transactional data and a **document database (MongoDB)** for flexible data. No external API, no cloud database, no external image hosting: everything runs locally.
+A self-contained online pharmacy (non-prescription products) combining a **relational database (PostgreSQL)** for critical transactional data and a **document database (MongoDB)** for flexible data. No external API, no cloud database, no external image hosting: everything runs locally.
 
 > 🎥 **Presentation video:** `<PASTE VIDEO LINK HERE>`
 

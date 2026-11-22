@@ -5,7 +5,7 @@
 SELECT product_id, title, stock_quantity FROM products ORDER BY product_id;
 SELECT COUNT(*) AS orders_count FROM orders;
 
--- >>> In the UI: login as alice, add 2 × "Wireless Mouse" + 1 × "Mechanical Keyboard", Checkout  (SUCCESS)
+-- >>> In the UI: login as alice, add 2 × "Soothing hand cream" + 1 × "Paracetamol 500 mg", Checkout  (SUCCESS)
 
 -- B) AFTER successful checkout: stock decreased, order + items created (relational join)
 SELECT product_id, title, stock_quantity FROM products ORDER BY product_id;
@@ -14,7 +14,7 @@ FROM orders o JOIN users u ON u.user_id=o.user_id
 JOIN order_items oi ON oi.order_id=o.order_id JOIN products p ON p.product_id=oi.product_id
 ORDER BY o.order_id DESC;
 
--- >>> In the UI: add 5 × "Laptop Stand" (only 3 in stock), Checkout  (FAILS -> ROLLBACK)
+-- >>> In the UI: add 5 × "Digital thermometer" (only 3 in stock), Checkout  (FAILS -> ROLLBACK)
 -- >>> OR tick "DEMO: simulate a failure" with any cart (fails AFTER stock deduction + order insert)
 
 -- C) AFTER the failed checkout: values must be IDENTICAL to section B (nothing partially saved)

@@ -15,13 +15,15 @@ const { pool, connectMongo, col } = require('../src/config');
     ('alice@shop.local',$2,'Alice Martin','customer'),
     ('bob@shop.local',$2,'Bob Durand','customer')`, [ah, uh]);
 
-  await pool.query(`INSERT INTO products(title,description,price,stock_quantity) VALUES
-    ('Mechanical Keyboard','RGB mechanical keyboard, blue switches',79.90,15),
-    ('Wireless Mouse','Ergonomic 2.4GHz mouse',29.50,40),
-    ('27" Monitor','QHD IPS 75Hz display',229.00,8),
-    ('USB-C Hub','7-in-1 aluminium hub',39.99,25),
-    ('Laptop Stand','Adjustable aluminium stand',24.90,3),
-    ('Webcam HD','1080p webcam with microphone',49.00,12)`);
+  await pool.query(`INSERT INTO products(title,description,price,stock_quantity,image_url) VALUES
+    ('Paracetamol 500 mg','Pain and fever relief, box of 16 tablets',2.60,40,'/img/products/paracetamol.svg'),
+    ('Vitamin C 1000','30 effervescent tablets, orange flavour',6.90,25,'/img/products/vitamin-c.svg'),
+    ('Soothing hand cream','Rich daily hand cream, 50 ml tube',4.90,30,'/img/products/hand-cream.svg'),
+    ('Saline nasal spray','Isotonic saline solution, 100 ml',5.50,18,'/img/products/nasal-spray.svg'),
+    ('Digital thermometer','Fast reading, flexible tip, memory function',9.90,3,'/img/products/thermometer.svg'),
+    ('Adhesive plasters','Assorted sizes, box of 40',3.80,50,'/img/products/bandages.svg'),
+    ('Magnesium + B6','Food supplement, 60 capsules',11.90,15,'/img/products/magnesium.svg'),
+    ('Sun cream SPF 50','High protection face and body, 50 ml',14.50,12,'/img/products/sunscreen.svg')`);
   console.log('SQL seed done');
 
   const db = await connectMongo();
@@ -33,11 +35,11 @@ const { pool, connectMongo, col } = require('../src/config');
   await col('user_notifications').createIndex({ userId: 1, sentAt: -1 });
 
   await col('product_reviews').insertMany([
-    { productId: 1, userId: 2, userName: 'Alice Martin', rating: 5, comment: 'Great keyboard, very satisfying to type on!', likes: 0, likedBy: [], createdAt: new Date() },
-    { productId: 1, userId: 3, userName: 'Bob Durand', rating: 4, comment: 'Good quality but a bit loud.', likes: 0, likedBy: [], createdAt: new Date() },
-    { productId: 2, userId: 2, userName: 'Alice Martin', rating: 4, comment: 'Comfortable mouse, battery lasts long.', likes: 0, likedBy: [], createdAt: new Date() },
+    { productId: 1, userId: 2, userName: 'Alice Martin', rating: 5, comment: 'Works well and the packaging was clear.', likes: 0, likedBy: [], createdAt: new Date() },
+    { productId: 1, userId: 3, userName: 'Bob Durand', rating: 4, comment: 'Arrived quickly, easy to find the leaflet.', likes: 0, likedBy: [], createdAt: new Date() },
+    { productId: 3, userId: 2, userName: 'Alice Martin', rating: 4, comment: 'Pleasant texture, not sticky.', likes: 0, likedBy: [], createdAt: new Date() },
   ]);
-  await col('user_notifications').insertOne({ userId: 2, title: 'Welcome!', message: 'Thanks for joining Hybrid Shop.', isRead: false, sentAt: new Date() });
+  await col('user_notifications').insertOne({ userId: 2, title: 'Welcome!', message: 'Thanks for joining Officine.', isRead: false, sentAt: new Date() });
   await col('user_activity_logs').insertOne({ userId: 1, action_type: 'DATABASE_SEEDED', ip_address: '127.0.0.1', metadata: { note: 'initial seed' }, timestamp: new Date() });
   console.log('Mongo seed done\nAccounts: admin@shop.local / Admin123!   alice@shop.local / User123!   bob@shop.local / User123!');
   process.exit(0);

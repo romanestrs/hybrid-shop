@@ -67,7 +67,7 @@ router.delete('/:id', auth, admin, ah(async (req, res) => {
   try {
     const { rows } = await pool.query('DELETE FROM products WHERE product_id=$1 RETURNING image_url', [req.params.id]);
     if (!rows[0]) throw new HttpError(404, 'Product not found');
-    if (rows[0].image_url) fs.unlink(path.join(__dirname, '..', '..', rows[0].image_url), () => {});
+    if (rows[0].image_url && rows[0].image_url.startsWith('/uploads/')) fs.unlink(path.join(__dirname, '..', '..', rows[0].image_url), () => {});
   } catch (e) {
     if (e.code === '23503') throw new HttpError(409, 'Product is referenced by existing orders: archive it instead of deleting it');
     throw e;
