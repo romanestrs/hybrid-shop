@@ -4,3 +4,4 @@ uploads/products/*
 uploads/avatars/*
 !uploads/products/.gitkeep
 !uploads/avatars/.gitkeep
+.DS_Store
