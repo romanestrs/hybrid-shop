@@ -25,9 +25,30 @@ flowchart LR
 ```
 
 ## Database design
-**SQL (4 tables)** – `users`, `products`, `orders`, `order_items` (PK, FK, UNIQUE, CHECK constraints) → [`sql/schema.sql`](sql/schema.sql)
 
-**NoSQL (4 collections)** – `shopping_carts`, `product_reviews`, `user_activity_logs`, `user_notifications`
+### SQL relational database: 4 interconnected tables (PostgreSQL)
+Full definition: [`sql/schema.sql`](sql/schema.sql). ER diagram: [`docs/DIAGRAMS.md`](docs/DIAGRAMS.md).
+
+| Table | Description & role | Key attributes & constraints |
+|-------|--------------------|------------------------------|
+| `users` | Authenticated accounts and profile credentials | `user_id` (PK, auto), `email` (UNIQUE, NOT NULL), `password_hash` (bcrypt), `full_name`, `role` (CHECK: customer / admin), `avatar_url`, `created_at` |
+| `products` | Product catalogue, prices and stock inventory | `product_id` (PK, auto), `title`, `description`, `price` (CHECK >= 0), `stock_quantity` (CHECK >= 0), `image_url`, `status` (CHECK: active / archived), `created_at` |
+| `orders` | Transaction headers and checkout details | `order_id` (PK, auto), `user_id` (FK to `users`, ON DELETE RESTRICT), `total_amount`, `order_status` (CHECK: pending / paid / shipped / delivered / cancelled), `shipping_address`, `created_at` |
+| `order_items` | Junction table linking products and quantities to orders | `item_id` (PK, auto), `order_id` (FK to `orders`, ON DELETE CASCADE), `product_id` (FK to `products`, ON DELETE RESTRICT), `unit_price`, `quantity` (CHECK > 0), UNIQUE (`order_id`, `product_id`) |
+
+Relations: `users` 1-N `orders` 1-N `order_items` N-1 `products`.
+
+### NoSQL document database: 4 collections (MongoDB)
+Schema diagram: [`docs/DIAGRAMS.md`](docs/DIAGRAMS.md). Collection names are in snake_case in the code.
+
+| Collection | Document purpose | Key document fields |
+|------------|------------------|---------------------|
+| `user_activity_logs` | User actions, audit trail, checkout success and rollback records | `_id`, `userId`, `action_type`, `ip_address`, `metadata` (free-form object), `timestamp` |
+| `product_reviews` | Rating feedback and unstructured review text | `_id`, `productId`, `userId`, `userName`, `rating` (1-5), `comment`, `likes`, `likedBy` (array), `createdAt`, `updatedAt` |
+| `shopping_carts` | Temporary dynamic cart before order placement (one per user, unique index on `userId`) | `_id`, `userId`, `items`: [ { `productId`, `title`, `quantity`, `price` } ], `updatedAt` |
+| `user_notifications` | Alert messages, order status updates and admin broadcasts | `_id`, `userId`, `title`, `message`, `isRead`, `sentAt`, `broadcast` |
+
+`userId` and `productId` in MongoDB reference `users.user_id` and `products.product_id` in PostgreSQL (application-level link, since the two engines are separate).
 
 ## CRUD coverage (all reachable from the web UI)
 | Entity | Engine | Create | Read | Update | Delete |
@@ -72,7 +93,7 @@ PostgreSQL manual setup if not using Docker: `createdb hybrid_shop` and set `PG_
 |----------|---------|-------------|
 | `PORT` | 3000 | HTTP port |
 | `PG_URL` | `postgresql://postgres:postgres@localhost:5432/hybrid_shop` | PostgreSQL connection |
-| `MONGO_URL` / `MONGO_DB` | `mongodb://localhost:27017` / `hybrid_shop` | MongoDB connection |
+| `MONGO_URL` / `MONGO_DB` | `mongodb://localhost:27018` / `hybrid_shop` | MongoDB connection |
 | `JWT_SECRET` | – | Secret used to sign tokens |
 | `DEMO_MODE` | `true` | Shows the "simulate failure" option for the rollback demo |
 
